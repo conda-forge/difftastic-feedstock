@@ -1,0 +1,39 @@
+context:
+  version: 0.61.0
+
+package:
+  name: difftastic
+  version: ${{ version }}
+
+source:
+  url: https://github.com/Wilfred/difftastic/archive/${{ version }}.tar.gz
+  sha256: 8e85001e32f1fe7b2c6d164f3a654cb589c6e48b6350421df27a56919da7a185
+
+build:
+  number: 0
+  skip: win
+
+requirements:
+  build:
+    - ${{ compiler('rust') }}
+    - ${{ compiler('c') }}
+    - ${{ compiler('cxx') }}
+    - ${{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+tests:
+  - script:
+      - difft --help
+
+about:
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Diff that understands syntax
+  homepage: https://github.com/Wilfred/difftastic
+  repository: https://github.com/Wilfred/difftastic
+
+extra:
+  recipe-maintainers:
+    - danielnachun
