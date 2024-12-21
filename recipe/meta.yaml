@@ -1,5 +1,5 @@
 {% set name = "difftastic" %}
-{% set version = "0.61.0" %}
+{% set version = "0.62.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/Wilfred/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: 8e85001e32f1fe7b2c6d164f3a654cb589c6e48b6350421df27a56919da7a185
+  sha256: ef69a23c6e3b9697d84ea5be158e8cb6d7482f49fc91cf4f9c7416bd48301260
 
 build:
   number: 0
