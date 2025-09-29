@@ -1,15 +1,12 @@
-schema_version: 1
-
 context:
-  name: difftastic
   version: 0.65.0
 
 package:
-  name: ${{ name|lower }}
+  name: difftastic
   version: ${{ version }}
 
 source:
-  url: https://github.com/Wilfred/${{ name }}/archive/${{ version }}.tar.gz
+  url: https://github.com/Wilfred/difftastic/archive/${{ version }}.tar.gz
   sha256: 59462f69e2cedfdc1bee4fd0da48fe9a7ae635cdb6818c1a300b31c0b146d4b8
 
 build:
@@ -41,4 +38,3 @@ about:
 extra:
   recipe-maintainers:
     - danielnachun
-
