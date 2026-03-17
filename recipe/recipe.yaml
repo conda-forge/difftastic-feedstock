@@ -1,5 +1,5 @@
 context:
-  version: 0.65.0
+  version: "0.68.0"
 
 package:
   name: difftastic
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://github.com/Wilfred/difftastic/archive/${{ version }}.tar.gz
-  sha256: 59462f69e2cedfdc1bee4fd0da48fe9a7ae635cdb6818c1a300b31c0b146d4b8
+  sha256: 86cfd4232f99c5dac56bd1e6fab7b8d96cfaac7a4271738b50c8189031c97a66
 
 build:
-  number: 1
+  number: 0
   skip: win
 
 requirements:
