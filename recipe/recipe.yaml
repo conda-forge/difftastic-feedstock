@@ -10,8 +10,33 @@ source:
   sha256: 4f89fdce7f58eb0521c14c14a7f76144dab5aa01400b332dd8710b550d32dc4c
 
 build:
-  number: 0
-  skip: win or ppc64le
+  number: 1
+  script:
+    env:
+      CARGO_PROFILE_RELEASE_STRIP: symbols
+      CARGO_PROFILE_RELEASE_LTO: fat
+    content:
+      - if: unix
+        then:
+          # _DEFAULT_SOURCE is the modern spelling of _BSD_SOURCE; keep both so
+          # the glibc 2.17 sysroots stay happy without tripping the deprecation
+          # warning on newer ones (which -Werror probes turn into errors)
+          - export CFLAGS="${CFLAGS} -D_BSD_SOURCE -D_DEFAULT_SOURCE"
+      - if: target_platform == 'linux-ppc64le'
+        then:
+          # rust-lld cannot handle the inline-PLT relocations (R_PPC64_PLTSEQ,
+          # R_PPC64_PLTCALL) that gcc emits in the tree-sitter scanners
+          - export RUSTFLAGS="${RUSTFLAGS:-} -Clink-arg=-fuse-ld=bfd"
+      - if: win
+        then:
+          # the vendored_parsers symlinks are extracted as file symlinks even
+          # where they point at a directory, which Windows cannot traverse, so
+          # replace them with real copies
+          - for /d %%D in (vendored_parsers\tree-sitter-*) do @if exist "%%D\src\parser.c" if not exist "%%D-src\parser.c" (del /f /q "%%D-src" 2>nul & xcopy /e /i /q /y "%%D\src" "%%D-src\" >nul)
+          - for %%D in (hare kotlin smali) do @(del /f /q "vendored_parsers\highlights\%%D.scm" 2>nul & copy /y "vendored_parsers\tree-sitter-%%D\queries\highlights.scm" "vendored_parsers\highlights\%%D.scm" >nul)
+          - del /f /q "vendored_parsers\highlights\janet_simple.scm" 2>nul & copy /y "vendored_parsers\tree-sitter-janet-simple\queries\highlights.scm" "vendored_parsers\highlights\janet_simple.scm" >nul
+      - cargo-bundle-licenses --format yaml --output ./THIRDPARTY.yml
+      - cargo auditable install --locked --no-track --bins --root ${{ PREFIX }} --path .
 
 requirements:
   build:
@@ -19,10 +44,17 @@ requirements:
     - ${{ compiler('c') }}
     - ${{ compiler('cxx') }}
     - ${{ stdlib('c') }}
+    - cargo-auditable
     - cargo-bundle-licenses
-    - make
+    - if: unix
+      then:
+        - make
 
 tests:
+  - package_contents:
+      bin:
+        - difft
+      strict: true
   - script:
       - difft --help
 
@@ -34,6 +66,7 @@ about:
   summary: Diff that understands syntax
   homepage: https://github.com/Wilfred/difftastic
   repository: https://github.com/Wilfred/difftastic
+  documentation: https://difftastic.wilfred.me.uk
 
 extra:
   recipe-maintainers:
